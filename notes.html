@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习笔记 - NoobOmega的博客</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>学习笔记</h1>
+            <p>知识积累与总结</p>
+        </header>
+        
+        <nav class="breadcrumb">
+            <a href="index.html" class="back-button">← 返回首页</a>
+        </nav>
+        
+        <main class="main-content">
+            <div class="content-actions" id="notesActions">
+                <button onclick="showEditor('notes')" id="addNoteBtn" style="display:none;">添加笔记</button>
+            </div>
+            
+            <div class="editor-section" id="notesEditor" style="display:none;">
+                <h3>添加新笔记</h3>
+                <input type="text" id="noteTitle" placeholder="笔记标题">
+                <textarea id="noteContent" placeholder="笔记内容..."></textarea>
+                <div class="editor-actions">
+                    <button onclick="saveNote()">保存</button>
+                    <button onclick="hideEditor('notes')">取消</button>
+                </div>
+            </div>
+            
+            <div class="content-list" id="notesList">
+                <!-- 笔记内容将通过JavaScript动态加载 -->
+                <div class="empty-state">
+                    <p>暂无学习笔记</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
