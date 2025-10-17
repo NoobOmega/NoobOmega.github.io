@@ -3,64 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习笔记 - NoobOmega的博客</title>
-    <link rel="stylesheet" href="style.css">
+    <title>学习笔记 - noobomega的博客</title>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>学习笔记</h1>
-            <p>知识积累与总结</p>
-        </header>
+        <a href="index.html" class="back-button">← 返回首页</a>
         
-        <nav class="breadcrumb">
-            <a href="index.html" class="back-button">← 返回首页</a>
-        </nav>
-        
-        <main class="main-content">
-            <div class="content-actions" id="notesActions">
-                <button onclick="showEditor('notes')" id="addNoteBtn" style="display:none;">添加笔记</button>
+        <div class="content-page">
+            <h2>📚 学习笔记</h2>
+            
+            <!-- 公开笔记区域 -->
+            <div id="public-notes">
+                <h3>知识库</h3>
+                <div class="search-box">
+                    <input type="text" id="note-search" placeholder="搜索笔记..." onkeyup="notesManager.searchNotes(this.value)">
+                </div>
+                <div id="public-notes-list" class="notes-container"></div>
             </div>
             
-            <div class="editor-section" id="notesEditor" style="display:none;">
-                <h3>添加新笔记</h3>
-                <input type="text" id="noteTitle" placeholder="笔记标题">
-                <textarea id="noteContent" placeholder="笔记内容..."></textarea>
-                <div class="editor-actions">
-                    <button onclick="saveNote()">保存</button>
-                    <button onclick="hideEditor('notes')">取消</button>
+            <!-- 管理员功能区域 -->
+            <div id="admin-notes" style="display: none;">
+                <h3>笔记管理</h3>
+                <div class="admin-tools">
+                    <button onclick="notesManager.showCreateForm()" class="btn btn-primary">新建笔记</button>
+                    <button onclick="notesManager.exportNotes()" class="btn btn-secondary">导出笔记</button>
+                    <select id="category-filter" onchange="notesManager.filterByCategory(this.value)">
+                        <option value="">所有分类</option>
+                    </select>
                 </div>
-            </div>
-            
-            <div class="content-list" id="notesList">
-                <!-- 笔记内容将通过JavaScript动态加载 -->
-                <div class="empty-state">
-                    <p>暂无学习笔记</p>
+                
+                <!-- 创建笔记表单 -->
+                <div id="create-note-form" style="display: none;" class="create-form">
+                    <h4>创建新笔记</h4>
+                    <form id="new-note-form">
+                        <input type="text" id="note-title" placeholder="笔记标题" required>
+                        <select id="note-category">
+                            <option value="技术">技术</option>
+                            <option value="学习">学习</option>
+                            <option value="生活">生活</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <textarea id="note-content" placeholder="笔记内容（支持Markdown）..." rows="10" required></textarea>
+                        <div class="form-options">
+                            <label>
+                                <input type="checkbox" id="note-private"> 私有笔记（仅自己可见）
+                            </label>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="btn btn-primary">保存笔记</button>
+                            <button type="button" onclick="notesManager.hideCreateForm()" class="btn btn-secondary">取消</button>
+                        </div>
+                    </form>
                 </div>
+                
+                <div id="notes-management" class="notes-management"></div>
             </div>
-        </main>
-    </div>
-    
-    <script src="auth.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
-<!-- 更新 notes.html 中的 content-list 部分 -->
-<div class="content-list" id="notesList">
-    <!-- 笔记条目将通过 JavaScript 动态加载 -->
-    <div class="empty-state">
-        <p>暂无学习笔记</p>
-    </div>
-</div>
-
-<!-- 添加删除确认对话框 -->
-<div id="deleteConfirmModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h3>确认删除</h3>
-        <p>确定要删除这篇笔记吗？此操作无法撤销。</p>
-        <div class="modal-actions">
-            <button onclick="confirmDelete()" class="btn-danger">确认删除</button>
-            <button onclick="cancelDelete()" class="btn-secondary">取消</button>
         </div>
     </div>
-</div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/admin.js"></script>
+    <script>
+        // 笔记管理功能
+        const notesManager = {
+            notes: JSON.parse(localStorage.getItem('blogNotes')) || [],
+            categories: ['技术', '学习', '生活', '其他'],
+            
+            init: function() {
+                if (!auth.checkPagePermission()) return;
+                
+                this.populateCategories();
+                this.displayPublicNotes();
+                
+                if (auth.isAdmin()) {
+                    document.getElementById('admin-notes').style.display = 'block';
+                    this.displayManagementInterface();
+                }
+                
+                // 绑定表单提交事件
+                document.getElementById('new-note-form').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    notesManager.createNewNote();
+                });
+            },
+            
+            populateCategories: function() {
+                const filterSelect = document.getElementById('category-filter');
+                this.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    filterSelect.appendChild(option);
+                });
+            },
+            
+            displayPublicNotes: function() {
+                const publicNotes = this.notes.filter(note => !note.private);
+                const notesList = document.getElementById('public-notes-list');
+                
+                if (publicNotes.length === 0) {
+                    notesList.innerHTML = '<div class="empty-state">暂无公开笔记</div>';
+                    return;
+                }
+                
+                // 按日期排序（最新的在前）
+                publicNotes.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                notesList.innerHTML = publicNotes.map(note => `
+                    <div class="note-item" data-category="${note.category}">
+                        <div class="note-header">
+                            <h4>${this.escapeHtml(note.title)}</h4>
+                            <span class="note-category">${note.category}</span>
+                        </div>
+                        <div class="note-content">${this.renderMarkdown(note.content)}</div>
+                        <div class="note-meta">
+                            <span class="note-date">${new Date(note.date).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            displayManagementInterface: function() {
+                const managementDiv = document.getElementById('notes-management');
+                
+                if (this.notes.length === 0) {
+                    managementDiv.innerHTML = '<div class="empty-state">暂无笔记，创建你的第一篇笔记吧！</div>';
+                    return;
+                }
+                
+                // 按日期排序
+                const sortedNotes = [...this.notes].sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                managementDiv.innerHTML = sortedNotes.map((note, index) => `
+                    <div class="note-item management-item" data-category="${note.category}">
+                        <div class="note-header">
+                            <h4>${this.escapeHtml(note.title)}</h4>
+                            <div>
+                                <span class="note-category">${note.category}</span>
+                                <span class="note-badge ${note.private ? 'private' : 'public'}">
+                                    ${note.private ? '私有' : '公开'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="note-content">${this.renderMarkdown(note.content)}</div>
+                        <div class="note-meta">
+                            <span class="note-date">${new Date(note.date).toLocaleString()}</span>
+                            <div class="note-actions">
+                                <button onclick="notesManager.editNote(${index})" class="btn btn-small">编辑</button>
+                                <button onclick="notesManager.deleteNote(${index})" class="btn btn-small btn-danger">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
+            
+            showCreateForm: function() {
+                document.getElementById('create-note-form').style.display = 'block';
+            },
+            
+            hideCreateForm: function() {
+                document.getElementById('create-note-form').style.display = 'none';
+                document.getElementById('new-note-form').reset();
+            },
+            
+            createNewNote: function() {
+                const title = document.getElementById('note-title').value;
+                const category = document.getElementById('note-category').value;
+                const content = document.getElementById('note-content').value;
+                const isPrivate = document.getElementById('note-private').checked;
+                
+                if (!title.trim() || !content.trim()) {
+                    alert('请填写标题和内容！');
+                    return;
+                }
+                
+                const newNote = {
+                    id: Date.now(),
+                    title: title.trim(),
+                    category: category,
+                    content: content.trim(),
+                    date: new Date().toISOString(),
+                    private: isPrivate
+                };
+                
+                this.notes.push(newNote);
+                this.saveNotes();
+                this.hideCreateForm();
+                this.displayManagementInterface();
+                this.displayPublicNotes();
+                
+                alert('笔记创建成功！');
+            },
+            
+            editNote: function(index) {
+                const note = this.notes[index];
+                const newTitle = prompt('修改标题：', note.title);
+                const newContent = prompt('修改内容：', note.content);
+                
+                if (newTitle !== null && newContent !== null) {
+                    this.notes[index].title = newTitle;
+                    this.notes[index].content = newContent;
+                    this.notes[index].date = new Date().toISOString();
+                    this.saveNotes();
+                    this.displayManagementInterface();
+                    this.displayPublicNotes();
+                }
+            },
+            
+            deleteNote: function(index) {
+                if (confirm('确定要删除这篇笔记吗？此操作不可恢复。')) {
+                    this.notes.splice(index, 1);
+                    this.saveNotes();
+                    this.displayManagementInterface();
+                    this.displayPublicNotes();
+                }
+            },
+            
+            searchNotes: function(query) {
+                const notes = document.querySelectorAll('.note-item');
+                const searchTerm = query.toLowerCase();
+                
+                notes.forEach(note => {
+                    const title = note.querySelector('h4').textContent.toLowerCase();
+                    const content = note.querySelector('.note-content').textContent.toLowerCase();
+                    const matches = title.includes(searchTerm) || content.includes(searchTerm);
+                    note.style.display = matches ? 'block' : 'none';
+                });
+            },
+            
+            filterByCategory: function(category) {
+                const notes = document.querySelectorAll('.note-item');
+                
+                notes.forEach(note => {
+                    const noteCategory = note.getAttribute('data-category');
+                    const matches = !category || noteCategory === category;
+                    note.style.display = matches ? 'block' : 'none';
+                });
+            },
+            
+            exportNotes: function() {
+                const dataStr = JSON.stringify(this.notes, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `noobomega_notes_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            },
+            
+            renderMarkdown: function(text) {
+                // 简单的Markdown渲染
+                return this.escapeHtml(text)
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+            },
+            
+            saveNotes: function() {
+                localStorage.setItem('blogNotes', JSON.stringify(this.notes));
+            },
+            
+            escapeHtml: function(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            notesManager.init();
+        });
+    </script>
+</body>
+</html>
