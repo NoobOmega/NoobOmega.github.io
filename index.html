@@ -3,112 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>noobomega的个人博客</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>noobomega的博客</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <header class="header">
+        <header>
             <h1 class="main-title">noobomega</h1>
             <p class="subtitle">欢迎来到我的blog</p>
         </header>
         
-        <nav class="navigation">
-            <div class="nav-buttons">
-                <a href="logs.html" class="nav-button" id="logs-link">
-                    <span class="icon">📝</span>
-                    查看日志
+        <main class="content">
+            <div class="nav-cards">
+                <a href="logs.html" class="card">
+                    <h2>日志</h2>
+                    <p>记录日常思考与发现</p>
                 </a>
-                <a href="notes.html" class="nav-button" id="notes-link">
-                    <span class="icon">📚</span>
-                    学习笔记
+                
+                <a href="notes.html" class="card">
+                    <h2>学习笔记</h2>
+                    <p>整理知识与学习心得</p>
                 </a>
             </div>
-        </nav>
-
-        <!-- 管理员功能区域 -->
-        <div class="admin-functions" id="adminFunctions" style="display: none;">
-            <h3>管理员功能</h3>
-            <div class="function-buttons">
-                <button id="writeDiaryBtn" class="func-btn" onclick="handleWriteDiary()">
-                    📝 写日志
-                </button>
-                <button id="writeNoteBtn" class="func-btn" onclick="handleWriteNote()">
-                    📚 写笔记
-                </button>
-                <button id="backupBtn" class="func-btn" onclick="handleBackup()">
-                    💾 备份数据
-                </button>
-                <button id="logoutBtn" class="func-btn logout" onclick="handleLogout()">
-                    🚪 退出登录
-                </button>
-            </div>
-        </div>
-
-        <!-- 登录区域 -->
-        <div class="login-section" id="login-section">
-            <h3>管理员登录</h3>
-            <form id="login-form" class="login-form">
-                <div class="form-group">
-                    <input type="password" id="admin-password" placeholder="输入管理员密码" required>
-                </div>
-                <button type="submit" class="btn btn-primary">登录</button>
-            </form>
-        </div>
-
-        <!-- 文章预览 -->
-        <div class="preview-section">
-            <h3>最新内容</h3>
-            <div id="recent-posts" class="posts-grid"></div>
-        </div>
+        </main>
     </div>
-
-    <script src="js/auth.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/console.js"></script>
-    <script>
-        // 初始化首页
-        document.addEventListener('DOMContentLoaded', function() {
-            // 检查登录状态
-            if (auth.isLoggedIn()) {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('login-section').style.display = 'none';
-            }
-            
-            // 登录表单处理
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const password = document.getElementById('admin-password').value;
-                if (auth.login(password)) {
-                    location.reload();
-                } else {
-                    alert('密码错误！');
-                }
-            });
-            
-            // 加载最新内容预览
-            loadRecentPosts();
-        });
-        
-        function loadRecentPosts() {
-            const recentPosts = storage.getRecentPosts(3);
-            const postsGrid = document.getElementById('recent-posts');
-            
-            if (recentPosts.length === 0) {
-                postsGrid.innerHTML = '<p class="empty-state">暂无内容</p>';
-                return;
-            }
-            
-            postsGrid.innerHTML = recentPosts.map(post => `
-                <div class="post-preview">
-                    <h4>${post.title}</h4>
-                    <p>${post.content.substring(0, 100)}...</p>
-                    <small>${new Date(post.date).toLocaleDateString()}</small>
-                </div>
-            `).join('');
-        }
-    </script>
 </body>
 </html>
