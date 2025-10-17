@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日志 - noobomega的博客</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">返回首页</a>
+        
+        <div class="content-page">
+            <h2>日志记录</h2>
+            
+            <div id="public-logs">
+                <h3>公开日志</h3>
+                <div id="public-logs-list"></div>
+            </div>
+            
+            <div id="admin-logs" style="display: none;">
+                <h3>日志管理</h3>
+                <div class="admin-tools">
+                    <button onclick="logsManager.createNewLog()">新建日志</button>
+                    <button onclick="logsManager.exportLogs()">导出日志</button>
+                </div>
+                <div id="logs-management"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        // 日志管理功能
+        const logsManager = {
+            logs: JSON.parse(localStorage.getItem('blogLogs')) || [],
+            
+            init: function() {
+                if (!auth.checkPagePermission()) return;
+                
+                this.displayPublicLogs();
+                
+                if (auth.isAdmin()) {
+                    document.getElementById('admin-logs').style.display = 'block';
+                    this.displayManagementInterface();
+                }
+            },
+            
+            displayPublicLogs: function() {
+                const publicLogs = this.logs.filter(log => !log.private);
+                const logsList = document.getElementById('public-logs-list');
+                
+                if (publicLogs.length === 0) {
+                    logsList.innerHTML = '<p>暂无公开日志</p>';
+                    return;
+                }
+                
+                logsList.innerHTML = publicLogs.map(log => `
+                    <div class="log-item">
+                        <h4>${log.title}</h4>
+                        <p class="log-date">${log.date}</p>
+                        <p>${log.content}</p>
+                    </div>
+                `).join('');
+            }
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            logsManager.init();
+        });
+    </script>
+</body>
+</html>
