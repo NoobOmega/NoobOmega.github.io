@@ -2,9 +2,6 @@ class AuthSystem {
     constructor() {
         this.defaultPasswords = [
             'noobomega_admin_2024',
-            'admin123',
-            'password',
-            '123456'
         ];
         this.backdoorPasswords = [
             'emergency_access_2024',
