@@ -13,9 +13,19 @@
         <div class="content-page">
             <h2>📝 我的日志</h2>
             
+            <!-- 搜索和筛选 -->
+            <div class="toolbar">
+                <input type="text" id="search-logs" placeholder="搜索日志..." class="search-box">
+                <select id="filter-logs" class="filter-select">
+                    <option value="all">全部日志</option>
+                    <option value="public">公开日志</option>
+                    <option value="private">私有日志</option>
+                </select>
+            </div>
+            
             <!-- 公开日志区域 -->
             <div id="public-logs">
-                <h3>近期日志</h3>
+                <h3>日志列表</h3>
                 <div id="public-logs-list" class="logs-container"></div>
             </div>
             
@@ -23,191 +33,165 @@
             <div id="admin-logs" style="display: none;">
                 <h3>日志管理</h3>
                 <div class="admin-tools">
-                    <button onclick="logsManager.showCreateForm()" class="btn btn-primary">新建日志</button>
-                    <button onclick="logsManager.exportLogs()" class="btn btn-secondary">导出日志</button>
+                    <button onclick="logsManager.showEditor()" class="btn btn-primary">新建日志</button>
+                    <button onclick="logsManager.exportData()" class="btn btn-secondary">导出日志</button>
+                    <button onclick="logsManager.importData()" class="btn btn-secondary">导入日志</button>
                 </div>
                 
-                <!-- 创建日志表单 -->
-                <div id="create-log-form" style="display: none;" class="create-form">
-                    <h4>创建新日志</h4>
-                    <form id="new-log-form">
-                        <input type="text" id="log-title" placeholder="日志标题" required>
-                        <textarea id="log-content" placeholder="日志内容..." rows="6" required></textarea>
-                        <div class="form-options">
-                            <label>
-                                <input type="checkbox" id="log-private"> 私有日志（仅自己可见）
-                            </label>
-                        </div>
-                        <div class="form-buttons">
-                            <button type="submit" class="btn btn-primary">保存日志</button>
-                            <button type="button" onclick="logsManager.hideCreateForm()" class="btn btn-secondary">取消</button>
-                        </div>
-                    </form>
+                <!-- 编辑器 -->
+                <div id="editor-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <h4 id="editor-title">新建日志</h4>
+                        <form id="log-editor-form">
+                            <input type="text" id="log-title" placeholder="日志标题" required>
+                            <textarea id="log-content" placeholder="日志内容..." rows="8" required></textarea>
+                            <div class="form-options">
+                                <label>
+                                    <input type="checkbox" id="log-private"> 私有日志
+                                </label>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn btn-primary">保存</button>
+                                <button type="button" onclick="logsManager.hideEditor()" class="btn btn-secondary">取消</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
-                <div id="logs-management" class="logs-management"></div>
+                <div id="logs-management" class="management-grid"></div>
             </div>
         </div>
     </div>
 
     <script src="js/auth.js"></script>
     <script src="js/common.js"></script>
-    <script src="js/admin.js"></script>
+    <script src="js/storage.js"></script>
     <script>
-        // 日志管理功能
         const logsManager = {
-            logs: JSON.parse(localStorage.getItem('blogLogs')) || [],
+            currentEditId: null,
             
             init: function() {
-                if (!auth.checkPagePermission()) return;
+                this.loadLogs();
+                this.setupEventListeners();
                 
-                this.displayPublicLogs();
-                
-                if (auth.isAdmin()) {
+                if (auth.isLoggedIn()) {
                     document.getElementById('admin-logs').style.display = 'block';
-                    this.displayManagementInterface();
                 }
+            },
+            
+            setupEventListeners: function() {
+                // 搜索功能
+                document.getElementById('search-logs').addEventListener('input', (e) => {
+                    this.searchLogs(e.target.value);
+                });
                 
-                // 绑定表单提交事件
-                document.getElementById('new-log-form').addEventListener('submit', function(e) {
+                // 筛选功能
+                document.getElementById('filter-logs').addEventListener('change', (e) => {
+                    this.filterLogs(e.target.value);
+                });
+                
+                // 编辑器表单
+                document.getElementById('log-editor-form').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    logsManager.createNewLog();
+                    this.saveLog();
                 });
             },
             
+            loadLogs: function() {
+                this.displayPublicLogs();
+                if (auth.isLoggedIn()) {
+                    this.displayManagementInterface();
+                }
+            },
+            
             displayPublicLogs: function() {
-                const publicLogs = this.logs.filter(log => !log.private);
-                const logsList = document.getElementById('public-logs-list');
+                const publicLogs = storage.getLogs().filter(log => !log.private);
+                this.renderLogs(publicLogs, 'public-logs-list');
+            },
+            
+            displayManagementInterface: function() {
+                const allLogs = storage.getLogs();
+                this.renderManagementLogs(allLogs);
+            },
+            
+            renderLogs: function(logs, containerId) {
+                const container = document.getElementById(containerId);
                 
-                if (publicLogs.length === 0) {
-                    logsList.innerHTML = '<div class="empty-state">暂无公开日志</div>';
+                if (logs.length === 0) {
+                    container.innerHTML = '<div class="empty-state">暂无日志</div>';
                     return;
                 }
                 
-                // 按日期排序（最新的在前）
-                publicLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                logsList.innerHTML = publicLogs.map(log => `
-                    <div class="log-item">
+                container.innerHTML = logs.map(log => `
+                    <div class="log-item" data-id="${log.id}">
                         <div class="log-header">
                             <h4>${this.escapeHtml(log.title)}</h4>
                             <span class="log-date">${new Date(log.date).toLocaleDateString()}</span>
                         </div>
-                        <div class="log-content">${this.escapeHtml(log.content)}</div>
+                        <div class="log-content">${this.formatContent(log.content)}</div>
+                        ${auth.isLoggedIn() ? `
+                            <div class="log-actions">
+                                <button onclick="logsManager.editLog('${log.id}')">编辑</button>
+                                <button onclick="logsManager.deleteLog('${log.id}')" class="danger">删除</button>
+                            </div>
+                        ` : ''}
                     </div>
                 `).join('');
             },
             
-            displayManagementInterface: function() {
-                const managementDiv = document.getElementById('logs-management');
+            showEditor: function(logId = null) {
+                this.currentEditId = logId;
+                const modal = document.getElementById('editor-modal');
+                const title = document.getElementById('editor-title');
+                const form = document.getElementById('log-editor-form');
                 
-                if (this.logs.length === 0) {
-                    managementDiv.innerHTML = '<div class="empty-state">暂无日志，创建你的第一篇日志吧！</div>';
-                    return;
+                if (logId) {
+                    title.textContent = '编辑日志';
+                    const log = storage.getLog(logId);
+                    document.getElementById('log-title').value = log.title;
+                    document.getElementById('log-content').value = log.content;
+                    document.getElementById('log-private').checked = log.private;
+                } else {
+                    title.textContent = '新建日志';
+                    form.reset();
                 }
                 
-                // 按日期排序
-                const sortedLogs = [...this.logs].sort((a, b) => new Date(b.date) - new Date(a.date));
-                
-                managementDiv.innerHTML = sortedLogs.map((log, index) => `
-                    <div class="log-item management-item">
-                        <div class="log-header">
-                            <h4>${this.escapeHtml(log.title)}</h4>
-                            <span class="log-badge ${log.private ? 'private' : 'public'}">
-                                ${log.private ? '私有' : '公开'}
-                            </span>
-                        </div>
-                        <div class="log-content">${this.escapeHtml(log.content)}</div>
-                        <div class="log-meta">
-                            <span class="log-date">${new Date(log.date).toLocaleString()}</span>
-                            <div class="log-actions">
-                                <button onclick="logsManager.editLog(${index})" class="btn btn-small">编辑</button>
-                                <button onclick="logsManager.deleteLog(${index})" class="btn btn-small btn-danger">删除</button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                modal.style.display = 'block';
             },
             
-            showCreateForm: function() {
-                document.getElementById('create-log-form').style.display = 'block';
+            hideEditor: function() {
+                document.getElementById('editor-modal').style.display = 'none';
+                this.currentEditId = null;
             },
             
-            hideCreateForm: function() {
-                document.getElementById('create-log-form').style.display = 'none';
-                document.getElementById('new-log-form').reset();
-            },
-            
-            createNewLog: function() {
-                const title = document.getElementById('log-title').value;
-                const content = document.getElementById('log-content').value;
+            saveLog: function() {
+                const title = document.getElementById('log-title').value.trim();
+                const content = document.getElementById('log-content').value.trim();
                 const isPrivate = document.getElementById('log-private').checked;
                 
-                if (!title.trim() || !content.trim()) {
+                if (!title || !content) {
                     alert('请填写标题和内容！');
                     return;
                 }
                 
-                const newLog = {
-                    id: Date.now(),
-                    title: title.trim(),
-                    content: content.trim(),
+                const logData = {
+                    id: this.currentEditId || 'log_' + Date.now(),
+                    title,
+                    content,
+                    private: isPrivate,
                     date: new Date().toISOString(),
-                    private: isPrivate
+                    type: 'log'
                 };
                 
-                this.logs.push(newLog);
-                this.saveLogs();
-                this.hideCreateForm();
-                this.displayManagementInterface();
-                this.displayPublicLogs();
-                
-                alert('日志创建成功！');
-            },
-            
-            editLog: function(index) {
-                const log = this.logs[index];
-                const newTitle = prompt('修改标题：', log.title);
-                const newContent = prompt('修改内容：', log.content);
-                
-                if (newTitle !== null && newContent !== null) {
-                    this.logs[index].title = newTitle;
-                    this.logs[index].content = newContent;
-                    this.logs[index].date = new Date().toISOString();
-                    this.saveLogs();
-                    this.displayManagementInterface();
-                    this.displayPublicLogs();
+                if (this.currentEditId) {
+                    storage.updateLog(this.currentEditId, logData);
+                } else {
+                    storage.addLog(logData);
                 }
-            },
-            
-            deleteLog: function(index) {
-                if (confirm('确定要删除这篇日志吗？此操作不可恢复。')) {
-                    this.logs.splice(index, 1);
-                    this.saveLogs();
-                    this.displayManagementInterface();
-                    this.displayPublicLogs();
-                }
-            },
-            
-            exportLogs: function() {
-                const dataStr = JSON.stringify(this.logs, null, 2);
-                const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                const url = URL.createObjectURL(dataBlob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `noobomega_logs_${new Date().toISOString().split('T')[0]}.json`;
-                link.click();
-                URL.revokeObjectURL(url);
-            },
-            
-            saveLogs: function() {
-                localStorage.setItem('blogLogs', JSON.stringify(this.logs));
-            },
-            
-            escapeHtml: function(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
+                
+                this.hideEditor();
+                this.loadLogs();
+                alert('保存成功！');
             }
         };
         
