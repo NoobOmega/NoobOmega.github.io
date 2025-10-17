@@ -137,3 +137,113 @@ header {
         padding: 2rem;
     }
 }
+
+/* 日志列表样式 */
+.posts h2 {
+    color: #4a5568;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(74, 85, 104, 0.1);
+}
+
+.post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-list li {
+    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.post-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 1);
+}
+
+.post-list a {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    text-decoration: none;
+    color: #4a5568;
+    font-size: 1.05rem;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* 图标样式 */
+.post-list a::before {
+    content: "📄";
+    font-size: 1.2rem;
+    margin-right: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.post-list a:hover::before {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* 悬停效果 */
+.post-list a:hover {
+    color: #667eea;
+    padding-left: 2rem;
+}
+
+/* 日期样式美化 */
+.post-list a::after {
+    content: attr(data-date);
+    margin-left: auto;
+    font-size: 0.9rem;
+    color: #718096;
+    background: rgba(113, 128, 150, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.post-list a:hover::after {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .post-list a {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+    
+    .post-list a::after {
+        margin-left: 0;
+        margin-top: 0.5rem;
+        align-self: flex-end;
+    }
+    
+    .post-list a::before {
+        margin-right: 0.8rem;
+    }
+    
+    .post-list a:hover {
+        padding-left: 1.2rem;
+    }
+}
+
+/* 空状态提示 */
+.posts > p {
+    text-align: center;
+    color: #718096;
+    font-style: italic;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 2px dashed rgba(113, 128, 150, 0.3);
+}
