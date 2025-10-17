@@ -356,25 +356,56 @@ header {
     }
 }
 
-/* 针对 <pre> 标签的优化样式 */
+/* pre样式 */
 .article-body pre {
-    /* 基础样式 */
-    font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', monospace; /* 使用等宽字体保证字符对齐 */
-    font-size: 1rem; /* 合适的字号 */
-    line-height: 1.7; /* 舒适的行高 */
-    color: #2d3748; /* 柔和的文字颜色，减轻阅读疲劳 */
-    background-color: #f8f9fa; /* 轻微的浅灰色背景，与正文区分 */
-    border: 1px solid #e9ecef; /* 细微的边框 */
-    border-radius: 8px; /* 圆角 */
-    padding: 1.5rem; /* 内边距 */
+    /* 关键修复属性 */
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    word-break: break-all !important;
+    overflow-x: auto;
     
-    /* 关键设置：允许自动换行并保留格式 */
-    white-space: pre-wrap; /* 保留空格和换行符，但允许文本在需要时自动换行 */
-    word-wrap: break-word; /* 确保长单词或URL也能换行 */
+    /* 尺寸限制 */
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    
+    /* 移除冲突样式 */
+    text-align: left;
+    text-indent: 0;
+    
+    /* 视觉样式 */
+    font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', monospace;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #2d3748;
+    background: rgba(248, 249, 250, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
 
-    /* 滚动条 */
-    overflow-x: auto; /* 如果内容仍超出容器，显示横向滚动条而非破坏布局 */
+/* 确保容器约束生效 */
+.post-content {
+    width: 100%;
+    overflow: hidden;
+}
 
-    /* 布局 */
-    margin: 1rem 0; /* 与其他元素保持距离 */
+.article-body {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .article-body pre {
+        font-size: 0.95rem;
+        padding: 1.2rem;
+        margin: 0.8rem 0;
+        border-radius: 6px;
+    }
+    
+    .post-content {
+        padding: 1.2rem;
+    }
 }
