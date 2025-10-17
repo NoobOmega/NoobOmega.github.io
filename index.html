@@ -15,34 +15,56 @@
         
         <nav class="navigation">
             <div class="nav-buttons">
-                <a href="logs.html" class="nav-button" id="logs-link">查看日志</a>
-                <a href="notes.html" class="nav-button" id="notes-link">学习笔记</a>
+                <a href="logs.html" class="nav-button" id="logs-link">
+                    <span class="icon">📝</span>
+                    查看日志
+                </a>
+                <a href="notes.html" class="nav-button" id="notes-link">
+                    <span class="icon">📚</span>
+                    学习笔记
+                </a>
             </div>
         </nav>
 
+        <!-- 管理员面板 -->
         <div class="admin-panel" id="admin-panel" style="display: none;">
             <h3>管理员功能</h3>
             <div class="admin-buttons">
-                <a href="logs.html?admin=true" class="admin-button">管理日志</a>
-                <a href="notes.html?admin=true" class="admin-button">管理笔记</a>
+                <button onclick="admin.openEditor('log')" class="admin-button">写日志</button>
+                <button onclick="admin.openEditor('note')" class="admin-button">写笔记</button>
+                <button onclick="admin.backupData()" class="admin-button">备份数据</button>
+                <button onclick="auth.logout()" class="admin-button">退出登录</button>
             </div>
         </div>
 
+        <!-- 登录区域 -->
         <div class="login-section" id="login-section">
             <h3>管理员登录</h3>
-            <form id="login-form">
-                <input type="password" id="admin-password" placeholder="输入管理员密码" required>
-                <button type="submit">登录</button>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <input type="password" id="admin-password" placeholder="输入管理员密码" required>
+                    <small>提示：尝试常用默认密码或查看auth.js文件</small>
+                </div>
+                <button type="submit" class="btn btn-primary">登录</button>
             </form>
+        </div>
+
+        <!-- 文章预览 -->
+        <div class="preview-section">
+            <h3>最新内容</h3>
+            <div id="recent-posts" class="posts-grid"></div>
         </div>
     </div>
 
     <script src="js/auth.js"></script>
     <script src="js/common.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/storage.js"></script>
     <script>
-        // 页面加载完成后检查管理员状态
+        // 初始化首页
         document.addEventListener('DOMContentLoaded', function() {
-            if (auth.isAdmin()) {
+            // 检查登录状态
+            if (auth.isLoggedIn()) {
                 document.getElementById('admin-panel').style.display = 'block';
                 document.getElementById('login-section').style.display = 'none';
             }
@@ -52,14 +74,33 @@
                 e.preventDefault();
                 const password = document.getElementById('admin-password').value;
                 if (auth.login(password)) {
-                    alert('登录成功！');
-                    document.getElementById('admin-panel').style.display = 'block';
-                    document.getElementById('login-section').style.display = 'none';
+                    location.reload();
                 } else {
                     alert('密码错误！');
                 }
             });
+            
+            // 加载最新内容预览
+            loadRecentPosts();
         });
+        
+        function loadRecentPosts() {
+            const recentPosts = storage.getRecentPosts(3);
+            const postsGrid = document.getElementById('recent-posts');
+            
+            if (recentPosts.length === 0) {
+                postsGrid.innerHTML = '<p class="empty-state">暂无内容</p>';
+                return;
+            }
+            
+            postsGrid.innerHTML = recentPosts.map(post => `
+                <div class="post-preview">
+                    <h4>${post.title}</h4>
+                    <p>${post.content.substring(0, 100)}...</p>
+                    <small>${new Date(post.date).toLocaleDateString()}</small>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
