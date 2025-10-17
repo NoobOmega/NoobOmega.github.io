@@ -1,9 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>我的个人博客</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoobOmega的博客</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    嗨咯，我刚建了一个新博客，哈哈
+    <div class="container">
+        <header>
+            <h1 class="main-title">noobomega</h1>
+            <p class="subtitle">欢迎来到垃圾站</p>
+        </header>
+        
+        <main class="main-content">
+            <div class="auth-section" id="authSection">
+                <h3>管理员登录</h3>
+                <form id="loginForm">
+                    <input type="password" id="adminKey" placeholder="输入管理员密钥" required>
+                    <button type="submit">登录</button>
+                </form>
+                <p id="authStatus" class="auth-status"></p>
+            </div>
+            
+            <div class="nav-cards">
+                <div class="card" onclick="navigateTo('diary.html')">
+                    <h2>📝 日志</h2>
+                    <p>记录日常思考与感悟</p>
+                    <div class="access-badge" id="diaryAccess">只读模式</div>
+                </div>
+                
+                <div class="card" onclick="navigateTo('notes.html')">
+                    <h2>📚 学习笔记</h2>
+                    <p>知识积累与学习记录</p>
+                    <div class="access-badge" id="notesAccess">只读模式</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="auth.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
