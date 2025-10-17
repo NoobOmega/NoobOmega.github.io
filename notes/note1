@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敬请期待 - noobomega的博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="main-title">noobomega</h1>
+            <p class="subtitle">敬请期待</p>
+        </header>
+        
+        <main class="content">
+            <div class="back-button">
+                <a href="javascript:history.back()">← 返回</a>
+            </div>
+            
+            <article class="post-content">
+                <p>下一次发布是什么时候呢....？</p>
+                <div class="article-body">
+                    <pre>
+                    敬请期待
+                    </pre>
+                </div>
+            </article>
+        </main>
+    </div>
+</body>
+</html>
