@@ -26,14 +26,22 @@
             </div>
         </nav>
 
-        <!-- 管理员面板 -->
-        <div class="admin-panel" id="admin-panel" style="display: none;">
+        <!-- 管理员功能区域 -->
+        <div class="admin-functions" id="adminFunctions" style="display: none;">
             <h3>管理员功能</h3>
-            <div class="admin-buttons">
-                <button onclick="admin.openEditor('log')" class="admin-button">写日志</button>
-                <button onclick="admin.openEditor('note')" class="admin-button">写笔记</button>
-                <button onclick="admin.backupData()" class="admin-button">备份数据</button>
-                <button onclick="auth.logout()" class="admin-button">退出登录</button>
+            <div class="function-buttons">
+                <button id="writeDiaryBtn" class="func-btn" onclick="handleWriteDiary()">
+                    📝 写日志
+                </button>
+                <button id="writeNoteBtn" class="func-btn" onclick="handleWriteNote()">
+                    📚 写笔记
+                </button>
+                <button id="backupBtn" class="func-btn" onclick="handleBackup()">
+                    💾 备份数据
+                </button>
+                <button id="logoutBtn" class="func-btn logout" onclick="handleLogout()">
+                    🚪 退出登录
+                </button>
             </div>
         </div>
 
