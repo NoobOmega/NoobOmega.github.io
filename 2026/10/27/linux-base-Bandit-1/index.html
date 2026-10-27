@@ -1,0 +1,241 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="author" content="NoobOmega"/><meta name="copyright" content="NoobOmega"/><meta name="theme-color" content="#FFB347"/><meta name="format-detection" content="telephone=no"/><meta name="keywords" content="学习"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-touch-fullscreen" content="yes"/><meta name="application-name" content="linux_basics-Bandit（1） | Noob的家"/><meta name="apple-mobile-web-app-title" content="linux_basics-Bandit（1） | Noob的家"/><meta name="apple-mobile-web-app-status-bar-style" content="#FFB347"/><link rel="canonical" href="https://NoobOmega.github.io/2026/10/27/linux-base-Bandit-1/"/><meta name="description" content="写在前面这是一次对 Overthewire 中 Bandit 靶场的一次复盘。 我推荐小白玩这个，它能够培养你的 Linux 基础？并且或许能培养你对黑客世界的基本认识。学习 linux 是接触开源世界的一个重要的支柱，如果你的常用系统是 windows ，可以尝试使用 windows 的 linux 子系统 WSL2 ,非常方便。大家可以登录这网站先看一下他的介绍，还是一样，这篇博客只记录...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux_basics-Bandit（1） | Noob的家">
+<meta property="og:url" content="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/index.html">
+<meta property="og:site_name" content="Noob的家">
+<meta property="og:description" content="写在前面这是一次对 Overthewire 中 Bandit 靶场的一次复盘。 我推荐小白玩这个，它能够培养你的 Linux 基础？并且或许能培养你对黑客世界的基本认识。学习 linux 是接触开源世界的一个重要的支柱，如果你的常用系统是 windows ，可以尝试使用 windows 的 linux 子系统 WSL2 ,非常方便。大家可以登录这网站先看一下他的介绍，还是一样，这篇博客只记录...">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg">
+<meta property="article:published_time" content="2026-10-27T03:23:28.000Z">
+<meta property="article:modified_time" content="2026-10-27T17:11:16.358Z">
+<meta property="article:author" content="NoobOmega">
+<meta property="article:tag" content="学习">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg"><meta name="robots" content="index,follow"/><meta name="googlebot" content="index,follow"/><meta name="revisit-after" content="1 days"/><title>linux_basics-Bandit（1） | Noob的家</title><link rel="shortcut icon" href="/assets/images/favicon-32x32.png"><link rel="preconnect" href="/assets"/><link rel="preconnect" href="assets"/>
+<link rel="stylesheet" href="/css/style.css">
+
+<link rel="stylesheet" href="/css/third-party/dist/APlayer.min.css">
+<link rel="prefetch" href="/"/><link rel="prefetch" href="/archives"/><link rel="prefetch" href="/tags"/><meta name="generator" content="Hexo 8.1.2"></head><body bg-style="none"><div class="post-progressbar-container"><div class="post-progressbar"></div></div><header><div id="navbar"><div id="nav-info"><a id="site-icon" href="/" title="主页"><img src="/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg" alt="Logo"/></a><a id="site-name" href="/" title="主页"><div>Noob的家</div><img src="/assets/images/svg/uc/uc-home.svg" class="icon noview" alt="Icon"></a></div><div id="nav-menu"><div class="menu-item"><a href="/"><span>首页</span></a></div><div class="menu-item"><a href="/categories"><span>分类</span></a></div><div class="menu-item"><a href="/friends"><span>友情链接</span></a></div></div><div id="nav-function"><div id="search-btn"><a href="javascript:void(0);" title="搜索" accesskey="s"><img src="/assets/images/svg/uc/uc-search.svg" class="icon noview" alt="Icon"><span>搜索</span></a></div><div id="menu-btn"><a href="javascript:void(0);" title="打开菜单"><img src="/assets/images/svg/uc/uc-menu.svg" class="icon noview" alt="Icon"></a></div></div></div></header><div id="menu-aside"><div id="menu-aside-container"><div id="menu-aside-info"><a href="/" title="主页"><img src="/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg" alt="Logo"/></a><a href="/" title="主页">Noob的家</a></div><div class="menu-aside-item"><a href="/"><span>首页</span></a></div><div class="menu-aside-item"><a href="/categories"><span>分类</span></a></div><div class="menu-aside-item"><a href="/friends"><span>友情链接</span></a></div><hr/></div></div><main><div class="banner"><div class="banner-info"><div class="banner-avatar"><img src="/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg" alt="Avatar"/></div><div class="banner-title">「 noobomega的家 」</div></div></div><div class="post-container"><div class="post-main"><div class="post-content"><h1 class="post-title">linux_basics-Bandit（1）</h1><div class="post-author"><span>作者: NoobOmega</span></div><div class="post-meta"><div class="post-info"><div class="post-date"><div class="post-pubdate"><img src="/assets/images/svg/ta/ta-pubdate.svg" class="icon noview" alt="Icon"><span>发表于2026-10-27</span></div><div class="post-update"><img src="/assets/images/svg/ta/ta-update.svg" class="icon noview" alt="Icon"><span>更新于2026-10-28</span></div></div><div class="post-read"></div></div><div class="post-attribute"><div class="post-categories"><img src="/assets/images/svg/ta/ta-category.svg" class="icon noview" alt="Icon"><span><a class="post-categories-link" href="/categories/%E6%88%91%E7%9A%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/">我的学习之路</a></span></div><div class="post-tags"><img src="/assets/images/svg/ta/ta-tag.svg" class="icon noview" alt="Icon"><span><a class="post-tags-link" href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag">学习</a></span></div></div></div><div class="post markdown" indent="false"><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这是一次对 <a target="_blank" rel="noopener" href="https://overthewire.org/wargames/">Overthewire</a> 中 Bandit 靶场的一次复盘。</p>
+<p>我推荐小白玩这个，它能够培养你的 Linux 基础？并且或许能培养你对黑客世界的基本认识。<br>学习 linux 是接触开源世界的一个重要的支柱，如果你的常用系统是 windows ，可以尝试使用 windows 的 linux 子系统 WSL2 ,非常方便。<br>大家可以登录这网站先看一下他的介绍，还是一样，这篇博客只记录有价值的地方，同学们可以自己去阅读相关网站或文档。</p>
+<p>另外，如果各位有能力的话，也可以赞助一下这个靶场哦。</p>
+<h2 id="如何学习命令行？"><a href="#如何学习命令行？" class="headerlink" title="如何学习命令行？"></a>如何学习命令行？</h2><p>一般来说，虽然你可以通过 gemini，chatGPT等 AI 直接获取答案，但是我更推荐的方式是通过搜索引擎以及 man 文档和命令本身自带的 help 选项，虽然一开始阅读英文会很痛苦，不过这是有价值的。<br>man文档使用方法： man 命令<br>help一般使用方法： 命令 –help 或 命令 -h<br>那么</p>
+<ul>
+<li>废话不多说，直接开始。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://overthewire.org/wargames/bandit/">https://overthewire.org/wargames/bandit/</a></li>
+</ul>
+<h2 id="你可能需要的知识"><a href="#你可能需要的知识" class="headerlink" title="你可能需要的知识"></a>你可能需要的知识</h2><blockquote>
+<p><strong>WSL2 bash 文件描述符 正则表达式</strong></p>
+</blockquote>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><blockquote>
+<p>注：ssh hostname: bandit*@bandit.labs.overthewire.org</p>
+</blockquote>
+<h3 id="level-0"><a href="#level-0" class="headerlink" title="level 0"></a>level 0</h3><blockquote>
+<p>The goal of this level is for you to log into the game using SSH. The host to which you need to connect is bandit.labs.overthewire.org, on port 2220. The username is bandit0 and the password is bandit0. Once logged in, go to the Level 1 page to find out how to beat Level 1.</p>
+</blockquote>
+<p>密码就是 bandit0</p>
+<h3 id="level-0-level-1"><a href="#level-0-level-1" class="headerlink" title="level 0 -&gt; level 1"></a>level 0 -&gt; level 1</h3><blockquote>
+<p>The password for the next level is stored in a file called readme located in the home directory. Use this password to log into bandit1 using SSH. Whenever you find a password for a level, use SSH (on port 2220) to log into that level and continue the game.</p>
+</blockquote>
+<p>使用ssh连接bandit服务器,即可拿到密码</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span></span><br><span class="line"><span class="built_in">cat</span> readme</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image.png" alt="alt text"><br>key: 6y2kwnwK6grgvwvpvLaa2T1cpFEKOhNR</p>
+<h3 id="level-1-level-2"><a href="#level-1-level-2" class="headerlink" title="level 1 -&gt; level 2"></a>level 1 -&gt; level 2</h3><blockquote>
+<p>The password for the next level is stored in a file called - located in the home directory</p>
+</blockquote>
+<p>直接 <em>cat -</em> ，会卡住,输入 ctrl+C 退出</p>
+<p><strong>原因</strong>: 在 Linux 很多命令，在参数中约定 - 为标准输入，因此，我们需要输入绝对&#x2F;相对路径来向 cat 表示“我们要输出名为 “-“ 的文件”，这里我们用相对路径。</p>
+<blockquote>
+<p>突然想顺便提一嘴： 在 linux 的文件描述符中，0表示标准输入，1表示标准输出，2表示标准错误<br>嗯，这样记吧 “输入输出标准错”<br>再提一嘴，在 cd 命令中，“ - ”表示OLDPWD，这个环境变量存储上一次的工作目录，使用 cd 就会更新一次</p>
+</blockquote>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> ./-</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-1.png" alt="alt text"><br>key: PK8fYLZg2hnHSz83plBL1iEPKdD3QToB</p>
+<h3 id="level-2-level-3"><a href="#level-2-level-3" class="headerlink" title="level 2 -&gt; level 3"></a>level 2 -&gt; level 3</h3><blockquote>
+<p>The password for the next level is stored in a file called –spaces in this filename– located in the home directory</p>
+</blockquote>
+<p>这一题的坑主要在于文件名有空格而且还有 – 这种东西，会把你输入的东西当成 long option，所以我们加个双引号，并且用相对路径解析就行了</p>
+<blockquote>
+<p>补充： bash 的三种基本引用方式</p>
+<ul>
+<li>\ 反斜杠转义：仅剥夺紧随其后的单个字符的特殊含义</li>
+<li>‘’ 强引用： 绝对字面量，内部所有字符全失去特殊作用</li>
+<li>“” 弱引用：阻止分词（空格把两个词分开）和通配符展开，保留变量与命令的执行能力</li>
+</ul>
+</blockquote>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> ./<span class="string">&quot;--spaces in this filename--&quot;</span></span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-2.png" alt="alt text"></p>
+<ul>
+<li>另一种做法： 你也可以使用 – 提前忽略后面所有的选项（终止参数解析）</li>
+</ul>
+<p>key: 7ZZ2LFrykP2zEyvBl4m3clcL7tGYJPME</p>
+<h3 id="level-3-level-4"><a href="#level-3-level-4" class="headerlink" title="level 3 -&gt; level 4"></a>level 3 -&gt; level 4</h3><blockquote>
+<p>The password for the next level is stored in a hidden file in the inhere directory.</p>
+</blockquote>
+<p>隐藏文件以“.” 开头，所以用 ls -a 列出所有文件后，cat 即可，或者直接用 cat .* ，因为这个文件夹只有一个隐藏文件。</p>
+<blockquote>
+<p>注： 如果使用通配符写法，建议写成 .??* 来排除 . 和 .. 这两个文件，找三个字符以上的文件名,这里我偷懒了，演示的话就用这个吧<br>单纯 * 会忽略隐藏文件，所以才要加一个 .</p>
+<ul>
+<li>补充：通配符</li>
+<li>*：匹配任意长度的任意字符（包括 0 个字符）。</li>
+<li>?：匹配恰好1个任意字符。</li>
+<li>[…]：匹配括号内的任意单个字符（如 [0-9] 或 [abc]）</li>
+</ul>
+</blockquote>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> inhere</span><br><span class="line"><span class="built_in">cat</span> .??*</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-3.png" alt="alt text"></p>
+<p>key: xzTXq1rDJQVVAzdv5cHq1TQytTWufAMq</p>
+<h3 id="level-4-level-5"><a href="#level-4-level-5" class="headerlink" title="level 4 -&gt; level 5"></a>level 4 -&gt; level 5</h3><blockquote>
+<p>The password for the next level is stored in the only human-readable file in the inhere directory. Tip: if your terminal is messed up, try the “reset” command.</p>
+</blockquote>
+<p>使用 file 命令查看文件类型<br>我们可以看到man文档对他的描述</p>
+<div class="code-container" code-lang="Text"><div class="codebox"><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file tests each argument in an attempt to classify it.  There are three sets of tests, performed in this  order:</span><br><span class="line">   filesystem  tests,  magic  tests,  and  language tests</span><br><span class="line">......</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p>可以看到 file 命令是一个将传入文件进行分类的工具，具体如何分类，可以自行查看 man 文档。使用通配符一次性查看所有文件类型</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file *</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-4.png" alt="alt text"><br>可以看到竟然报了这么多错，因为通配符展开在 bash 中是在执行命令之前，<br>file * 会被展开为 file -file00  -file01  -file02  -file03  -file04  -file05  -file06  -file07  -file08  -file09再执行，而 - 会被识别为短选项，因此报错。</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file ./*</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p>修改后，可以看到第七个文件是人类可读的，cat即可<br><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-5.png" alt="alt text"></p>
+<p>key: 6C7h9GD8M6ai5nr7wo1RonrzFjj9yIrG</p>
+<h3 id="level-5-level-6"><a href="#level-5-level-6" class="headerlink" title="level 5 -&gt; level 6"></a>level 5 -&gt; level 6</h3><blockquote>
+<p>The password for the next level is stored in a file somewhere under the inhere directory and has all of the following properties:</p>
+<p>human-readable<br>1033 bytes in size<br>not executable</p>
+</blockquote>
+<p>使用 file * 来查看inhere中的文件，发现全都是 directory ，因此，我们可以使用 find 命令<br>阅读 find document ,可以看到 find 是对指定目录进行递归搜索并在每个文件上执行表达式的工具<br>因此，我们只需要使用 TEST 表达式，后面接 ACTION 表达式 -print即可，（当然这是默认的， <strong>The -print action is performed on all files for which the whole expression is true</strong>）</p>
+<blockquote>
+<p>建议你去看 man 文档的 expression 章节</p>
+</blockquote>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -readable -size 1033c ! -executable</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-6.png"></p>
+<p>拿到文件后直接 cat 即可<br><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-7.png" alt="alt text"></p>
+<p>key:pXa26xhMWaC2SvDotA4r9EgZkulOeSBW </p>
+<h3 id="level-6-level-7"><a href="#level-6-level-7" class="headerlink" title="level 6 -&gt; level 7"></a>level 6 -&gt; level 7</h3><blockquote>
+<p>The password for the next level is stored somewhere on the server and has all of the following properties:</p>
+<p>owned by user bandit7<br>owned by group bandit6<br>33 bytes in size</p>
+</blockquote>
+<p>从根目录开始搜索就行了，你要是不记得 TEST 完全可以 find –help然后对着抄</p>
+<blockquote>
+<p>这里我想多说一嘴 uid 和 user 的区别，一个是“数字 ID”给操作系统看的，一个是“字符串名字”给人类看的</p>
+</blockquote>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -user bandit7 -group bandit6 -size 33c</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-8.png" alt="alt text"><br>可以看到出现了一堆 stderr 的报错，重定向把他们扔了即可,然后用 xargs 把 stdout 转化成参数， cat 密码即可</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -user bandit7 -group bandit6 -size 33c 2&gt; /dev/null | xargs <span class="built_in">cat</span></span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-9.png" alt="alt text"></p>
+<p>key: Bmnnvf82KzQlfxgAI2d1zYbr1u9pr3E3</p>
+<h3 id="level-7-level-8"><a href="#level-7-level-8" class="headerlink" title="level 7 -&gt; level 8"></a>level 7 -&gt; level 8</h3><blockquote>
+<p>The password for the next level is stored in the file data.txt next to the word millionth</p>
+</blockquote>
+<p>使用 grep 进行正则表达式匹配即可</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grep millionth data.txt</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-10.png" alt="alt text"></p>
+<p>key: VR1ljMayciFxbnUokuQmJFw6QC9VKtub</p>
+<h3 id="level-8-level-9"><a href="#level-8-level-9" class="headerlink" title="level 8 -&gt; level 9"></a>level 8 -&gt; level 9</h3><blockquote>
+<p>The password for the next level is stored in the file data.txt and is the only line of text that occurs only once</p>
+</blockquote>
+<p>使用 sort 和 uniq 进行去重即可，学过算法的人都知道原理，就不细讲了，想深入了解这两个命令的自己去看文档</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sort</span> data.txt |<span class="built_in">uniq</span> -u <span class="comment">#-u选项只显示单独出现的行</span></span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-11.png" alt="alt text"></p>
+<p>key: EjmOSvuAu7sGAHqHVcBDPirRe9T03kxl</p>
+<h3 id="level-9-level-10"><a href="#level-9-level-10" class="headerlink" title="level 9 -&gt; level 10"></a>level 9 -&gt; level 10</h3><blockquote>
+<p>The password for the next level is stored in the file data.txt in one of the few human-readable strings, preceded by several ‘&#x3D;’ characters.</p>
+</blockquote>
+<p>我们直接 grep -a &#x3D;&#x3D; data.txt也能做出来，但是不够优雅。</p>
+<blockquote>
+<p>为什么不优雅？<br>因为二进制数据包含大量不可见控制字符和终端转义序列，直接 grep 会把终端搞乱码；而strings 默认会提取连续 4 个及以上的可打印字符，过滤掉纯粹的机器码</p>
+</blockquote>
+<p>优雅做法：<br>从二进制文件里读取人类可读文字，阅读 man 文档查看 strings 命令的用法，操，这英文太烦了，不过我们要坚持。<br>看完之后大致知道strings是从非文本文件中读取 ASCII 的字符，那我们直接管道给grep就行了</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">strings data.txt|grep ==</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-12.png" alt="alt text"></p>
+<p>key: B0s2khmbT9u0geKuOoVGW3JZKhndE3BG</p>
+<h3 id="level-10-level-11"><a href="#level-10-level-11" class="headerlink" title="level 10 -&gt; level 11"></a>level 10 -&gt; level 11</h3><blockquote>
+<p>The password for the next level is stored in the file data.txt, which contains base64 encoded data</p>
+</blockquote>
+<p>base64解码即可，简单的钥匙。</p>
+<div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">base64</span> -d data.txt</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
+<p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/10/27/linux-base-Bandit-1/image-13.png" alt="alt text"></p>
+<p>key: pYfOY6HwUsDj5rL9UvyhU7MCmv8vN5Ro</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>暂时先复盘到这吧，一共有30关，我打算分成3部分。<br>话说，有点想开个随笔分类了，丢点心灵垃圾进去如何呢？</p>
+<blockquote>
+<p><strong>IMPORTANT</strong><br>！！！然后祝自己生日快乐！！！<br>生日快乐，祝你在20岁幸福快乐！永远开心！</p>
+</blockquote>
+</div><div class="post-reward"><div class="post-reward-btn" title="赞赏作者"><img src="/assets/images/svg/uc/uc-gift.svg" class="icon noview" alt="Icon"><span></span></div><div class="post-reward-content"><div class="post-reward-text"></div><div class="post-reward-list"><a href="/null" target="_blank">致谢名单</a></div></div></div><div class="post-copyright"><div class="post-copyright-info">本作品由 NoobOmega 于 2026-10-27 11:23:28 发布</div><div class="post-copyright-link"><span>作品地址：<a href="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/">linux_basics-Bandit（1）</a></span><button class="copy-text" type="button" data-text="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/">复制</button></div><div class="post-copyright-detail">除特别声明外，本站作品均采用 <a href='https://creativecommons.org/licenses/by-nc-sa/4.0/' title='Attribution-NonCommercial-ShareAlike' target='_blank'>CC BY-NC-SA 4.0</a> 许可协议，转载请注明来自 <a href='/'>Noob的家</a></div><img class="post-copyright-icon noview" src="/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg" alt="Logo"/></div><div class="post-tail-tags"><a class="post-tail-tags-link" href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag">学习</a></div><div class="post-nav"><a class="post-nav-prev" nopost=""></a><a class="post-nav-next" href="/2026/10/19/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" title="搭建自己的第一个个人博客">下一篇<span>搭建自己的第一个个人博客</span></a></div></div><aside id="post-sidebar" status="show"><div id="toc-container"><div class="toc-title"><img src="/assets/images/svg/ta/ta-toc.svg" class="icon noview" alt="Icon"><span>目录</span></div><div class="toc-content" id="toc-div"><ol class="toc-list"><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-list-text">写在前面</span></a></li><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E5%A6%82%E4%BD%95%E5%AD%A6%E4%B9%A0%E5%91%BD%E4%BB%A4%E8%A1%8C%EF%BC%9F"><span class="toc-list-text">如何学习命令行？</span></a></li><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E5%8F%82%E8%80%83"><span class="toc-list-text">参考</span></a></li><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E4%BD%A0%E5%8F%AF%E8%83%BD%E9%9C%80%E8%A6%81%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="toc-list-text">你可能需要的知识</span></a></li><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E6%AD%A3%E6%96%87"><span class="toc-list-text">正文</span></a><ol class="toc-list-child"><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-0"><span class="toc-list-text">level 0</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-0-level-1"><span class="toc-list-text">level 0 -&gt; level 1</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-1-level-2"><span class="toc-list-text">level 1 -&gt; level 2</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-2-level-3"><span class="toc-list-text">level 2 -&gt; level 3</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-3-level-4"><span class="toc-list-text">level 3 -&gt; level 4</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-4-level-5"><span class="toc-list-text">level 4 -&gt; level 5</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-5-level-6"><span class="toc-list-text">level 5 -&gt; level 6</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-6-level-7"><span class="toc-list-text">level 6 -&gt; level 7</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-7-level-8"><span class="toc-list-text">level 7 -&gt; level 8</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-8-level-9"><span class="toc-list-text">level 8 -&gt; level 9</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-9-level-10"><span class="toc-list-text">level 9 -&gt; level 10</span></a></li><li class="toc-list-item toc-list-level-3"><a class="toc-list-link" href="#level-10-level-11"><span class="toc-list-text">level 10 -&gt; level 11</span></a></li></ol></li><li class="toc-list-item toc-list-level-2"><a class="toc-list-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-list-text">写在最后</span></a></li></ol></div></div></aside></div></div><div id="toolbar" hide=""><div id="toolbar-setting-container" hide=""><div class="toolbar-item"><button id="tool-color-mode" title="深色模式" type="button"><img src="/assets/images/svg/ta/ta-moon.svg" class="icon noview" alt="Icon"></button></div><div class="toolbar-item"><button class="copy-text" id="tool-share" title="分享" type="button" data-text="https://noobomega.github.io/2026/10/27/linux-base-Bandit-1/"><img src="/assets/images/svg/ta/ta-share.svg" class="icon noview" alt="Icon"></button></div><div class="toolbar-item"><button id="tool-font-size-plus" title="放大字体" type="button"><img src="/assets/images/svg/ta/ta-text-plus.svg" class="icon noview" alt="Icon"></button></div><div class="toolbar-item"><button id="tool-font-size-minus" title="缩小字体" type="button"><img src="/assets/images/svg/ta/ta-text-minus.svg" class="icon noview" alt="Icon"></button></div></div><div class="toolbar-container"><div class="toolbar-item"><button id="tool-setting" title="设置" type="button"><img src="/assets/images/svg/ta/ta-setting.svg" class="icon noview" alt="Icon"></button></div><div class="toolbar-item"><button id="tool-toc" title="目录" type="button"><img src="/assets/images/svg/ta/ta-toc.svg" class="icon noview" alt="Icon"></button></div><div class="toolbar-item"><button id="tool-gototop" title="返回顶部" type="button"><img src="/assets/images/svg/ta/ta-up.svg" class="icon noview" alt="Icon"></button></div></div></div><div class="search-overlay"><div class="search-container"><div class="search-header"><div class="search-title"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+搜索</div><div class="search-close-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 21a9 9 0 0 0 9 -9a9 9 0 0 0 -9 -9a9 9 0 0 0 -9 9a9 9 0 0 0 9 9z" /><path d="M9 8l6 8" /><path d="M15 8l-6 8" /></svg></div></div><div class="search-input-box"><input id="search-input" type="search" placeholder="请输入关键词进行站内搜索……" value="" maxlength="80"/></div><div class="search-result-container"><div class="search-result-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg></div></div></div></div><div id="music-player"></div></main><footer><div class="footer"><div id="footer-copyright">© 2026 <span>💗</span> <a href="/null">NoobOmega</a></div><div id="footer-info"><div id="footer-framework">🚀本站由 <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/chanwj/hexo-theme-meow" title="3.3.2" target="_blank">Meow</a> 强力驱动</div><div id="footer-runtime"><span id="runtime" data-startdate="2026-10-19T22:16:20.000Z">🌻已稳定运行.年.月.天</span></div></div></div></footer><div class="scripts"><script>const GLOBALCONFIG = {
+  root: '/',
+  toolbar: true,
+  lazyload_src: '/assets/images/Meow-Loading.webp',
+  friends: false,
+  album: '',
+  codeblock: true,
+  code_copy_text: false,
+  share_text: '🐱Share From Meow',
+  onblur_title: '快回来吧',
+  mouse_click: true,
+  notify:{
+    enable: false,
+    info: '复制成功～转载请标注本文地址',
+    f12_info: '开发者模式已打开，请遵循本站版权协议'
+  },
+  search: {
+    enable: true,
+    path: '',
+    local: {
+      top_n_per_article: 1,
+      preload: false
+    }
+  },
+  encrypt: false,
+  category: false,
+};
+</script><script>if (!localStorage.getItem('color-mode')) {
+  localStorage.setItem('color-mode', 'light' || 'light');
+}
+document.body.setAttribute('data-mode', localStorage.getItem('color-mode'));
+</script>
+<script src="/js/theme/tools/utils.js"></script>
+
+<script src="/js/plugins/dist/lazyload.min.js"></script>
+
+<script src="/js/plugins/view-image.min.js"></script>
+<script>if (localStorage.getItem('font-size')) {
+  document.querySelector('.post').style.fontSize = localStorage.getItem('font-size') + 'px';
+}
+</script>
+<script src="/js/plugins/dist/APlayer.min.js"></script>
+<script>const initAplayer = (data) => {
+  if (!data.length) return;
+
+  const ap = new APlayer({
+    container: document.getElementById('music-player'),
+    fixed: true,
+    autoplay: false,
+    theme: '#FFB347',
+    loop: 'all',
+    order: 'list',
+    volume: 0.7,
+    lrcType: 3,
+    audio: data
+  });
+
+  ap.on('play', () => {
+    document.getElementById('music-player').setAttribute("play", "");
+  });
+  ap.on('pause', () => {
+    document.getElementById('music-player').removeAttribute("play");
+  });
+};
+
+const fetchData = () => {
+  fetch('')
+    .then(res => res.json())
+    .then(result => initAplayer(result));
+};
+
+if ('') {
+  document.addEventListener("DOMContentLoaded", fetchData);
+} else {
+  document.addEventListener("DOMContentLoaded", initAplayer());;
+}</script>
+<script src="/js/plugins/dist/search.js"></script>
+
+<script src="/js/main.js" type="module"></script>
+</div></body></html>
