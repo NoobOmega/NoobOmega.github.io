@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://noobomega.github.io/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg">
 <meta property="article:published_time" content="2026-11-15T13:36:17.000Z">
-<meta property="article:modified_time" content="2026-11-15T16:40:12.113Z">
+<meta property="article:modified_time" content="2026-11-15T17:07:59.005Z">
 <meta property="article:author" content="NoobOmega">
 <meta property="article:tag" content="代理">
 <meta name="twitter:card" content="summary_large_image">
@@ -20,7 +20,7 @@
 <p>原本，我的代理就是通过 vasma 这个脚本进行的自动搭建，不过，这次给自己的节点加一个新跳节点，也是让我真正开始接触了这些代理协议的含义。</p>
 <p>总之，这一篇主要讲述如何搭建一个自己的纯净代理。</p>
 <blockquote>
-<p>你可能需要知道的知识：<br>** VPS ， VPN, azure for students ，链式代理 ， LINUX 基础 ，vasma ，TLS公钥私钥 ， GFW ，DPI ，ISP ，JSON 配置**</p>
+<p>你可能需要知道的知识：<br><strong>VPS ， VPN, azure for students ，链式代理 ， LINUX 基础 ，vasma ，TLS公钥私钥 ， GFW ，DPI ，ISP ，JSON 配置</strong></p>
 </blockquote>
 <h2 id="获得VPS"><a href="#获得VPS" class="headerlink" title="获得VPS"></a>获得VPS</h2><p>为了建一个VPN，我们首先必须有一个VPS当代理服务器。作为学生，我们当然可以白嫖我们能获得的免费的东西，想要免费获得一个 VPS当作我们的前继节点，我们可以去 azure 进行学生认证，每年有200美金的赠额，在这上面搭建我们的第一跳。我们使用 SSH 进行登录即可。</p>
 <p>我们打印一个 HELLO WORLD 的输出吧，这是一种情怀？没绷住。<br><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/image.png" alt="alt text"></p>
@@ -95,6 +95,7 @@
 <p>改完配置先别急着重启，先用 Xray 自带的测试参数（记得用管理员权限）校验一下整个目录的 JSON 合并后有没有语法或标签冲突</p>
 <div class="code-container" code-lang="Bash"><div class="codebox"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> /etc/v2ray-agent/xray/xray run -<span class="built_in">test</span> -confdir /etc/v2ray-agent/xray/conf</span><br></pre></td></tr></table></figure><div class="code-fold" title="Fold/Open"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 9l6 6l6 -6" /></svg></div><div class="code-copy" title="Copy"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"  stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg></div></div></div>
 <p><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/image-5.png" alt="alt text"><br>没啥问题。出现configuration ok即可！</p>
+<p>重启之后你就能获得自己的梯子！！<br><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/image6.png" alt="alt text"></p>
 <h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>其实，要想完成完美的使用claude，我们还得实现WebRTC泄露的问题，这个其实再客户端开TUN模式即可，但是新版本的V2rayn貌似有bug，讲这个bug太难了，而且我也没完全搞清楚，所以留给读者自己去解决吧（如果你也遇到了）<br>今天就写到这吧。</p>
 <p>其他不知道写啥，只知道搭个代理挺累的，还有期中考试终于结束了！！考试结束快乐！！<br>哦，还有，我发现，一个工具的核心和用户配置解耦，非常棒，我以后做项目也要把核心功能和用户配置分开。</p>
 <p>最后问。。。你手动配置了XRAY吗？还是交给AGENT?这是你自己的选择，你当然可以随便看看，然后将剩下的，具体的操作， 交给 AGENT 全权接管你的服务器，不过那有什么意义呢？你只是一个空心人——<br>会的是AI ，不是你</p>
