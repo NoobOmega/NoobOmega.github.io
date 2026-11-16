@@ -1,93 +1,157 @@
-/* 
- * hexo theme meow
- * search function scripts
+/*
+ * Meow local search: load the generated index only when it is needed.
  */
-
 const initSearch = () => {
-  const initLocalSearch = () => {
-    if (!GLOBALCONFIG.search.path) {
-      console.warn('`hexo-generator-searchdb` plugin is not installed or configured!');
-      return;
-    }
-    const localSearch = new LocalSearch({
-      path: GLOBALCONFIG.root + GLOBALCONFIG.search.path,
+  const overlay = document.querySelector('.search-overlay');
+  const input = document.getElementById('search-input');
+  const container = document.querySelector('.search-result-container');
+  const trigger = document.querySelector('#search-btn a');
+  const closeButton = document.querySelector('.search-close-btn');
+  if (!overlay || !input || !container || !trigger || !closeButton || overlay.dataset.initialized) return;
+  overlay.dataset.initialized = 'true';
+
+  const messages = container.dataset;
+  const search = GLOBALCONFIG.search.path && typeof LocalSearch !== 'undefined'
+    ? new LocalSearch({
+      path: new URL(GLOBALCONFIG.search.path, new URL(GLOBALCONFIG.root, location.origin)).href,
       top_n_per_article: GLOBALCONFIG.search.local.top_n_per_article,
       unescape: false
-    });
+    }) : null;
+  let loading = null;
+  let failed = false;
+  let composing = false;
 
-    const input = document.querySelector('#search-input');
-    const container = document.querySelector('.search-result-container');
-    const searchOverlay = document.querySelector('.search-overlay');
-
-    const inputEventFunction = () => {
-      if (!localSearch.isfetched) return;
-      const searchText = input.value.trim().toLowerCase();
-      const keywords = searchText.split(/[-\s]+/);
-      let resultItems = [];
-      if (searchText.length > 0) {
-        // Perform local searching
-        resultItems = localSearch.getResultItems(keywords);
-      }
-      if (keywords.length === 1 && keywords[0] === '') {
-        container.innerHTML = '<div class="search-result-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg></div>';
-      } else if (resultItems.length === 0) {
-        container.innerHTML = '<div class="search-result-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg></div>';
-      } else {
-        resultItems.sort((left, right) => {
-          if (left.includedCount !== right.includedCount) {
-            return right.includedCount - left.includedCount;
-          } else if (left.hitCount !== right.hitCount) {
-            return right.hitCount - left.hitCount;
-          }
-          return right.id - left.id;
-        });
-
-        // Remove highlight searchparams at target page
-        container.innerHTML = `<div class="search-stats">${resultItems.length + ' results found'}</div><ul class="search-result-list">${resultItems.map(result => result.item.replace(/(<a href="[^\?]+)\?highlight=[^"]+"( class|>)/g, `$1"$2`)).join('')}</ul>`;
-      }
-    };
-
-    // Highlight keywords at target page
-    // localSearch.highlightSearchWords(document.querySelector('.post'));
-    if (GLOBALCONFIG.search.local.preload) {
-      localSearch.fetchData();
+  const showMessage = (message, retry = false) => {
+    const text = document.createElement('p');
+    text.className = 'search-message';
+    text.textContent = message;
+    container.replaceChildren(text);
+    if (retry) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'search-retry';
+      button.textContent = messages.retry;
+      button.addEventListener('click', loadIndex);
+      container.append(button);
     }
-
-    input.addEventListener('input', inputEventFunction);
-    window.addEventListener('search:loaded', inputEventFunction);
-
-    // Handle and trigger popup window
-    document.getElementById('search-btn').addEventListener('click', () => {
-      if (searchOverlay.hasAttribute("active")) {
-        searchOverlay.removeAttribute("active");
-      } else {
-        searchOverlay.setAttribute("active", "");
-      }
-
-      // Wait for search-popup animation to complete
-      setTimeout(() => input.focus(), 500);
-      if (!localSearch.isfetched) localSearch.fetchData();
-    });
-
-    // Monitor main search box
-    const onPopupClose = () => {
-      searchOverlay.removeAttribute("active");
-    };
-
-    searchOverlay.addEventListener('click', event => {
-      if (event.target === searchOverlay) {
-        onPopupClose();
-      }
-    });
-    document.querySelector('.search-close-btn').addEventListener('click', onPopupClose);
-    window.addEventListener('keyup', event => {
-      if (event.key === 'Escape') {
-        onPopupClose();
-      }
-    });
   };
 
-  initLocalSearch();
+  const renderResults = () => {
+    if (!search) {
+      showMessage(messages.failed);
+      return;
+    }
+    if (!search.isfetched) {
+      showMessage(failed ? messages.failed : messages.loading, failed);
+      return;
+    }
+    const query = input.value.trim().toLowerCase();
+    const keywords = [...new Set(query.split(/[-\s]+/).filter(Boolean))];
+    if (!keywords.length) {
+      showMessage(messages.empty);
+      return;
+    }
+    const items = search.getResultItems(keywords);
+    items.sort((a, b) => b.includedCount - a.includedCount ||
+      b.titleHits - a.titleHits || b.hitCount - a.hitCount || a.id - b.id);
+    if (!items.length) {
+      showMessage(messages.noResults);
+      return;
+    }
+    const stats = document.createElement('div');
+    stats.className = 'search-stats';
+    stats.textContent = messages.results.replace('{count}', items.length);
+    const list = document.createElement('ul');
+    list.className = 'search-result-list';
+    list.innerHTML = items.map(result => result.item).join('');
+    list.querySelectorAll('a').forEach(link => {
+      const url = new URL(link.href);
+      url.searchParams.delete('highlight');
+      link.href = url.href;
+    });
+    container.replaceChildren(stats, list);
+  };
+
+  const loadIndex = () => {
+    if (!search || search.isfetched) {
+      renderResults();
+      return Promise.resolve();
+    }
+    if (loading) return loading;
+    failed = false;
+    container.setAttribute('aria-busy', 'true');
+    showMessage(messages.loading);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    loading = search.fetchData({ signal: controller.signal })
+      .then(renderResults)
+      .catch(error => {
+        failed = true;
+        console.warn('Search index could not be loaded:', error);
+        showMessage(messages.failed, true);
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+        loading = null;
+        container.setAttribute('aria-busy', 'false');
+      });
+    return loading;
+  };
+
+  const close = () => {
+    overlay.removeAttribute('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.focus({ preventScroll: true });
+  };
+  trigger.addEventListener('click', event => {
+    event.preventDefault();
+    if (overlay.hasAttribute('active')) {
+      close();
+      return;
+    }
+    overlay.setAttribute('active', '');
+    overlay.setAttribute('aria-hidden', 'false');
+    trigger.setAttribute('aria-expanded', 'true');
+    // Wait for the scale/visibility transition before focusing the input.
+    setTimeout(() => {
+      if (overlay.hasAttribute('active')) input.focus({ preventScroll: true });
+    }, 350);
+    loadIndex();
+  });
+  closeButton.addEventListener('click', close);
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) close();
+  });
+  input.addEventListener('compositionstart', () => { composing = true; });
+  input.addEventListener('compositionend', () => {
+    composing = false;
+    renderResults();
+  });
+  input.addEventListener('input', () => {
+    if (!composing) renderResults();
+  });
+  overlay.addEventListener('keydown', event => {
+    if (composing || event.isComposing) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+    } else if (event.key === 'Enter' && event.target === input) {
+      event.preventDefault();
+      container.querySelector('.search-result-title')?.click();
+    } else if (event.key === 'Tab') {
+      const focusable = [...overlay.querySelectorAll('button, input, a[href]')];
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+  if (GLOBALCONFIG.search.local.preload) loadIndex();
 };
 
 export default initSearch;

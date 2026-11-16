@@ -2983,8 +2983,37 @@ body[data-mode="dark"] .search-container {
   height: 1.4rem;
   cursor: pointer;
 }
+.search-close-btn {
+  display: flex;
+  padding: 0.2rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
 .search-close-btn:hover {
   color: var(--theme-color);
+}
+.search-close-btn:focus-visible,
+.search-retry:focus-visible,
+#search-input:focus-visible,
+.search-result-list a:focus-visible {
+  outline: 2px solid var(--theme-color);
+  outline-offset: 3px;
+}
+.search-message {
+  margin: 1rem 0;
+  color: var(--font-color-light-2);
+  text-align: center;
+}
+.search-retry {
+  align-self: center;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--theme-color);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--font-color);
+  cursor: pointer;
 }
 #search-input {
   width: 100%;
@@ -4637,4 +4666,149 @@ body[data-mode="dark"] .timeline .timeline-icon:before {
   font-weight: bold;
   font-size: 1.35em;
   margin: 1.3em;
+}
+.comment {
+  margin-top: 3.5rem;
+}
+@media (max-width: 900px) {
+  .comment {
+    margin-top: 3em;
+  }
+}
+.recent-comments {
+  overflow: hidden;
+}
+.recent-comments-container {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.6rem;
+  font-size: 0.9em;
+}
+.recent-comments-container[loaded] {
+  height: 190px;
+  animation: roll-loop 8s cubic-bezier(0.17, 0.02, 0.88, 0.99) 1s infinite alternate;
+}
+.recent-comments-container img {
+  cursor: auto !important;
+  vertical-align: middle;
+}
+.recent-comments-container br {
+  display: none;
+}
+.recent-comments-container .recent-comments-item {
+  width: 100%;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  border-left: 4px solid var(--background-color-grey);
+  padding: 0.2rem 0 0.2rem 0.5rem;
+  transition: all 0.3s ease-in-out;
+  color: var(--font-color);
+}
+.recent-comments-container .recent-comments-item:hover {
+  border-left-color: var(--theme-color);
+  transform: translateX(10px);
+}
+.recent-comments-container .recent-comments-content {
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
+  color: var(--font-color-light-1);
+}
+.recent-comments-container .recent-comments-content img {
+  width: 1rem;
+  margin: 0 1px;
+}
+.recent-comments-container .recent-comments-user {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+}
+.recent-comments-container .recent-comments-user span {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  background: var(--background-color-grey-transparent);
+  border-radius: 0.4rem;
+  padding: 0 0.3em;
+}
+.recent-comments-container .recent-comments-user img {
+  width: 1.2rem;
+  border-radius: 50%;
+}
+@-moz-keyframes roll-loop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-424.2px);
+  }
+}
+@-webkit-keyframes roll-loop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-424.2px);
+  }
+}
+@-o-keyframes roll-loop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-424.2px);
+  }
+}
+@keyframes roll-loop {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-424.2px);
+  }
+}
+:root {
+  --waline-theme-color: #ffb347 !important;
+  --waline-active-color: #ffd191 !important;
+  --waline-badge-color: #ffb347 !important;
+}
+:root body[data-mode='dark'] {
+  --waline-bg-color: rgba(45,45,45,0.7) !important;
+  --waline-color: #bebec6 !important;
+  --waline-theme-color: #88c0ed !important;
+  --waline-active-color: #b8d9f4 !important;
+  --waline-badge-color: #88c0ed !important;
+  --waline-info-color: #808090;
+  --waline-info-bg-color: #373737;
+}
+@media (max-width: 900px) {
+  :root {
+    --waline-font-size: 15px !important;
+  }
+}
+div[data-waline] p {
+  margin: 0;
+}
+.wl-header label,
+.wl-header input {
+  font-size: 0.85em !important;
+}
+.wl-card .wl-head .wl-nick {
+  color: #737373;
+}
+.wl-card .wl-badge {
+  line-height: 1.5;
+  margin-inline-end: 0.5em;
+}
+.wl-card .wl-content .wl-reply-to {
+  margin: 0 0.5em 0 0 !important;
+}
+body[data-mode='dark'] .wl-card .wl-head .wl-nick {
+  color: #9595a2;
 }

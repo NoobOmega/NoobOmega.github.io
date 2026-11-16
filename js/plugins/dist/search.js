@@ -260,6 +260,7 @@ class LocalSearch {
       resultItems.push({
         item: resultItem,
         id: resultItems.length,
+        titleHits: keysOfTitle.size,
         hitCount,
         includedCount
       });
@@ -267,13 +268,15 @@ class LocalSearch {
     return resultItems;
   }
 
-  fetchData() {
+  fetchData({ signal } = {}) {
     const isXml = !this.path.endsWith('json');
-    fetch(this.path)
-      .then(response => response.text())
+    return fetch(this.path, { signal })
+      .then(response => {
+        if (!response.ok) throw new Error('Search index: HTTP ' + response.status);
+        return response.text();
+      })
       .then(res => {
         // Get the contents from search data
-        this.isfetched = true;
         this.datas = isXml ? [...new DOMParser().parseFromString(res, 'text/xml').querySelectorAll('entry')].map(element => ({
           title: element.querySelector('title').textContent,
           content: element.querySelector('content').textContent,
@@ -287,6 +290,7 @@ class LocalSearch {
           return data;
         });
         // Remove loading animation
+        this.isfetched = true;
         window.dispatchEvent(new Event('search:loaded'));
       });
   }
