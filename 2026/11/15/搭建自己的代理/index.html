@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="author" content="NoobOmega"/><meta name="copyright" content="NoobOmega"/><meta name="theme-color" content="#FFB347"/><meta name="format-detection" content="telephone=no"/><meta name="keywords" content="学习,代理"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-touch-fullscreen" content="yes"/><meta name="application-name" content="搭建自己的代理 | Noob的家"/><meta name="apple-mobile-web-app-title" content="搭建自己的代理 | Noob的家"/><meta name="apple-mobile-web-app-status-bar-style" content="#FFB347"/><link rel="canonical" href="https://NoobOmega.github.io/2026/11/15/搭建自己的代理/"/><meta name="description" content="写在前面也是很久没有写一些博客了。主要是因为期中考的压力有点让我炸刚了。不过最近终于考完了 写这一篇的原因呢，主要是因为自己有用 Claude 的需求，所以对纯净 IP 的需求就有了。本来自己是有一个 机房 IP 的代理，但是现在有点不够用，于是也是在 proxy-seller 买了一个住宅 IP 的代理，当作我的链式代理的出口 IP，这样或许就能美美用上 claude 了吧，不过目前还没有...">
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="author" content="NoobOmega"/><meta name="copyright" content="NoobOmega"/><meta name="theme-color" content="#FFB347"/><meta name="format-detection" content="telephone=no"/><meta name="keywords" content="代理,学习"/><meta name="mobile-web-app-capable" content="yes"/><meta name="apple-mobile-web-app-capable" content="yes"/><meta name="apple-touch-fullscreen" content="yes"/><meta name="application-name" content="搭建自己的代理 | Noob的家"/><meta name="apple-mobile-web-app-title" content="搭建自己的代理 | Noob的家"/><meta name="apple-mobile-web-app-status-bar-style" content="#FFB347"/><link rel="canonical" href="https://NoobOmega.github.io/2026/11/15/搭建自己的代理/"/><meta name="description" content="写在前面也是很久没有写一些博客了。主要是因为期中考的压力有点让我炸刚了。不过最近终于考完了 写这一篇的原因呢，主要是因为自己有用 Claude 的需求，所以对纯净 IP 的需求就有了。本来自己是有一个 机房 IP 的代理，但是现在有点不够用，于是也是在 proxy-seller 买了一个住宅 IP 的代理，当作我的链式代理的出口 IP，这样或许就能美美用上 claude 了吧，不过目前还没有...">
 <meta property="og:type" content="article">
 <meta property="og:title" content="搭建自己的代理 | Noob的家">
 <meta property="og:url" content="https://noobomega.github.io/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/index.html">
@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://noobomega.github.io/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/assets/images/b6ece96ce9fddd499c805fcda9f8ccf7.jpg">
 <meta property="article:published_time" content="2026-11-15T13:36:17.000Z">
-<meta property="article:modified_time" content="2026-11-16T09:56:18.306Z">
+<meta property="article:modified_time" content="2026-11-16T10:05:47.592Z">
 <meta property="article:author" content="NoobOmega">
 <meta property="article:tag" content="代理">
 <meta property="article:tag" content="学习">
@@ -23,7 +23,7 @@
 <blockquote>
 <p>你可能需要知道的知识：<br><strong>VPS ， VPN, azure for students ，链式代理 ， LINUX 基础 ，vasma ，TLS公钥私钥 ， GFW ，DPI ，ISP ，JSON 配置</strong></p>
 </blockquote>
-<h2 id="获得VPS"><a href="#获得VPS" class="headerlink" title="获得VPS"></a>获得VPS</h2><p>为了建一个VPN，我们首先必须有一个VPS当代理服务器。作为学生，我们当然可以白嫖我们能获得的免费的东西，想要免费获得一个 VPS当作我们的前继节点，我们可以去 azure 进行学生认证，每年有200美金的赠额，在这上面搭建我们的第一跳。我们使用 SSH 进行登录即可。</p>
+<h2 id="获得VPS"><a href="#获得VPS" class="headerlink" title="获得VPS"></a>获得VPS</h2><p>为了建一个VPN，我们首先必须有一个VPS当代理服务器。作为学生，我们当然可以白嫖我们能获得的免费的东西，想要免费获得一个 VPS当作我们的前继节点，我们可以去 azure 进行学生认证，每年有100美金的赠额，在这上面搭建我们的第一跳。我们使用 SSH 进行登录即可。</p>
 <p>我们打印一个 HELLO WORLD 的输出吧，这是一种情怀？没绷住。<br><img lazyload src="/assets/images/Meow-Loading.webp" data-lazy-src="/2026/11/15/%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BB%A3%E7%90%86/image.png" alt="alt text"></p>
 <blockquote>
 <p>顺带一提：因为我最近也在学 OS ，感慨一下这种 LINUX 多用户系统正是分时系统的一个具体实现啊。</p>
@@ -57,7 +57,7 @@
 <blockquote>
 <p>注：叠甲：作者没有实际用过这个协议，所以具体也不清楚，这里只是简单带过，你杠就是你对。</p>
 </blockquote>
-<h4 id="socks"><a href="#socks" class="headerlink" title="socks"></a>socks</h4><p>一个广义上的应用层协议，和https在同一层，但SOCKS5 协议本身是不提供传输层加密的，所以为了防止被封，它只能待在境外那半截链路里（Azure -&gt; 住宅代理服务器），负责最后一跳的出口转发，不要直连，否则感觉可能直接被墙。</p>
+<h4 id="socks"><a href="#socks" class="headerlink" title="socks"></a>socks</h4><p>一个广义上的应用层协议，和https在同一层，但SOCKS5 协议本身是不提供传输层加密的，所以为了防止被封，这里它只能待在境外那半截链路里（Azure -&gt; 住宅代理服务器），负责最后一跳的出口转发，不要直连，否则感觉可能直接被墙。</p>
 <h2 id="XRAY"><a href="#XRAY" class="headerlink" title="XRAY"></a>XRAY</h2><p>搞懂上面这些协议，就明白 vasma 和 Xray 的分工了：vasma 只是方便我们安装和修改配置的脚本工具，转发流量的是Xray-core。</p>
 <p>Xray核心由三部分组成：</p>
 <ol>
